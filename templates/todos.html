@@ -21,8 +21,11 @@
   {%  else  %}
     <ul>
       {%for task in tasks %}
-      <li>
-        {{task}}
+      <li>{{task.name}}
+        <form method="POST" action="/delete-task" style="display:inline-block;">
+            <input type="submit" value="Done!" />
+            <input type="hidden" name="task-id" value="{{task.id}}" />
+        </form>
       </li>
       {% endfor %}
     </ul>
