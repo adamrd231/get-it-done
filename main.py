@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -7,6 +7,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://get-it-done@localhost:8889/get-it-done'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+app.secret_key = "abc"
 
 
 class Task(db.Model):
@@ -30,6 +31,13 @@ class User(db.Model):
         self.password = password
 
 
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'register']
+    if request.endpoint not in allowed_routes and 'email' not in session:
+        return redirect('/login')
+
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -39,9 +47,12 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and user.password == password:
             # to do - "remember that the user has logged in"
+            session['email'] = email
+            flash("Logged in")
+            # session['password'] = password
             return redirect('/')
         else:
-            return '<h1>Failed the contest.</h1>'
+            flash('User password Incorrect, or user does not exist', 'error')
 
 
     return render_template('login.html')
@@ -62,6 +73,7 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             #todo - Remember the user
+            session['email'] = email
             return redirect('/')
         else:
             # todo - user better response message
@@ -98,6 +110,11 @@ def delete_task():
     db.session.add(task)
     db.session.commit()
 
+    return redirect('/')
+
+@app.route('/logout')
+def logout():
+    del session['email']
     return redirect('/')
 
 
