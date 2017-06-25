@@ -1,11 +1,10 @@
 from flask import Flask, request, redirect, render_template, session, flash
-from flask_sqlalchemy import SQLAlchemy
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}'.format(
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}'.format(
     username="adamReed",
     password="python-any-where",
     hostname="adamReed.mysql.pythonanywhere-services.com",
